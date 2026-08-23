@@ -95,7 +95,25 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,
 <div class="card">
   <p class="muted">Track progress toward rebuilding your simulated safety cushion.</p>
   <div id="recoveryProgress"></div>
-  <button class="primary" onclick="updateRecoveryProgress()">Update Progress</button>
+
+<label for="recoveryAmount" class="muted">Amount rebuilt toward your safety cushion</label>
+
+<div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+  <span>$</span>
+  <input
+    id="recoveryAmount"
+    type="number"
+    min="0"
+    max="100"
+    step="0.01"
+    placeholder="25.00"
+    inputmode="decimal"
+    style="flex:1"
+  >
+</div>
+
+<button class="primary" onclick="updateRecoveryProgress()">Update Progress</button>
+  
 </div>
 <div class="title">
   🚨 Financial Emergency Mode
@@ -874,13 +892,7 @@ function createRecoveryPlan(){
       4. Consider setting aside about <b>${money(weekly)}</b> per week until your cushion is restored.<br><br>
       <span class="muted">This is a sandbox planning suggestion, not personalized financial advice.</span></div>`;
   addActivity('🛡️ Recovery Plan created');
-}
-
-function updateRecoveryProgress(){
-  const target=100;
-  const current=Math.max(0,Math.min(target,safe));
-  const pct=Math.round((current/target)*100);
-  let html='';
+  let html='';}.
   if(current>=target){
     html=`<div class="successbox"><b>🎉 RECOVERY COMPLETE!</b><br>Your simulated Safe-to-Spend is ${money(current)}, at or above the ${money(target)} safety cushion.<br><br><b>100%</b> of your recovery target reached.</div>`;
   }else{
