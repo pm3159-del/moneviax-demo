@@ -1176,7 +1176,8 @@ function createRecoveryPlan(){
 
 function updateRecoveryProgress(){
   const target=100;
-  const current=Math.max(0,Math.min(target,safe));
+  const input=document.getElementById('recoveryAmount');
+  const current=Math.max(0,Math.min(target,Number(input?.value || 0)));
   const pct=Math.round((current/target)*100);
   let html='';
   if(current>=target){
