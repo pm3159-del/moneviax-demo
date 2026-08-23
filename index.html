@@ -97,7 +97,34 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,
   <div id="recoveryProgress"></div>
   <button class="primary" onclick="updateRecoveryProgress()">Update Progress</button>
 </div>
-<div class="title">🚨 Financial Emergency Mode</div>
+<div class="title">
+  🚨 Financial Emergency Mode
+  <span class="info-icon"
+        tabindex="0"
+        role="button"
+        onclick="toggleInfo('emergencyModeInfo')"
+        onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleInfo('emergencyModeInfo')}">ⓘ</span>
+</div>
+
+<div id="emergencyModeInfo" class="info-popup" hidden>
+  <strong>Emergency Mode Guide</strong>
+
+  <p>🚨 <b>What is Emergency Mode?</b><br>
+  Emergency Mode is designed for situations where your available money is under significant pressure.</p>
+
+  <p><b>When can it activate?</b><br>
+  Moneviax may recommend Emergency Mode when projected cash flow indicates that upcoming bills or spending could put your Safe to Spend below a critical level.</p>
+
+  <p><b>What does it do?</b><br>
+  It creates a temporary Recovery Plan to help stabilize your finances.</p>
+
+  <p><b>Example:</b><br>
+  You have <b>$300 Safe to Spend</b>, but upcoming obligations could leave you <b>−$150</b>.</p>
+
+  <p>🚨 <b>Emergency Mode Recommended</b></p>
+
+  <p><b>Important:</b> Emergency Mode does not automatically move money, cancel payments, contact creditors, or make financial decisions for you.</p>
+</div>
 <div class="card">
   <p class="muted">A simplified protection view for periods when projected cash flow becomes seriously constrained.</p>
   <button class="danger" onclick="activateEmergencyMode()">Check Emergency Mode</button>
