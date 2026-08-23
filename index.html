@@ -884,33 +884,48 @@ function activateEmergencyMode(){
 function createRecoveryPlan(){
   const target=Math.max(0,100-safe);
   const weekly=Math.max(25,Math.ceil(target/4));
+
   document.getElementById('emergencyMode').innerHTML=
     `<div class="successbox"><b>🛡️ Recovery Plan</b><br>
       1. Protect essential bills first.<br>
       2. Review optional recurring charges.<br>
       3. Keep discretionary purchases below your available Safe to Spend.<br>
       4. Consider setting aside about <b>${money(weekly)}</b> per week until your cushion is restored.<br><br>
-      <span class="muted">This is a sandbox planning suggestion, not personalized financial advice.</span></div>`;
-  addActivity('🛡️ Recovery Plan 
+      <span class="muted">This is a sandbox planning suggestion, not personalized financial advice.</span>
+    </div>`;
+
+  addActivity('🛡️ Recovery Plan created');
+}
+
+function updateRecoveryProgress(){
+  const target=100;
+  const input=document.getElementById('recoveryAmount');
+  const current=Math.max(0,Math.min(target,Number(input?.value || 0)));
+  const pct=Math.round((current/target)*100);
   let html='';
+
   if(current>=target){
-    html=`<div class="successbox"><b>🎉 RECOVERY COMPLETE!</b><br>Your simulated Safe-to-Spend is ${money(current)}, at or above the ${money(target)} safety cushion.<br><br><b>100%</b> of your recovery target reached.</div>`;
+    html=`<div class="successbox"><b>🎉 RECOVERY COMPLETE!</b><br>
+      Your simulated recovery cushion is ${money(current)}, at or above the ${money(target)} target.<br><br>
+      <b>100%</b> of your recovery target reached.</div>`;
   }else{
     const remaining=target-current;
+
     html=`<div class="${current<25?'alert':'successbox'}">
       <b>${current<25?'🛡️ Recovery in Progress':'📈 Keep Going!'}</b><br>
       Safety cushion rebuilt: <b>${money(current)}</b> / ${money(target)}<br>
       Progress: <b>${pct}%</b><br><br>
-      <div style="height:12px;background:#e9edf4;border-radius:8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:#5b4bdb"></div></div>
-      <br><span class="muted">${money(remaining)} remaining to reach your simulated safety cushion.</span>
+      <div style="height:12px;background:#e9edf4;border-radius:8px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:#5b4bdb"></div>
+      </div>
+      <br>
+      <span class="muted">${money(remaining)} remaining to reach your simulated safety cushion.</span>
     </div>`;
   }
+
   document.getElementById('recoveryProgress').innerHTML=html;
   addActivity('📈 Recovery Progress updated');
 }
-
-let notificationPrefs={sms:true,push:true,email:false,critical:true,cash:true,payment:true,sub:true,goal:true,milestone:true,weekly:true};
-let notifications=[];
 function saveNotificationPrefs(){
   notificationPrefs={
     sms:document.getElementById('prefSms').checked,push:document.getElementById('prefPush').checked,
