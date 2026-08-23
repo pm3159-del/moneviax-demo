@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Moneviax Sandbox MVP</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#18212f;background:#eef2f7}
+*{box-sizing:border-box}body{margin:0}.app{max-width:430px;margin:18px auto;background:#f7f9fc;min-height:900px;border-radius:28px;overflow:hidden;box-shadow:0 12px 40px #0002}
+header{background:linear-gradient(135deg,#5b4bdb,#159b9b);color:#fff;padding:24px}.brand{font-size:25px;font-weight:850}.tag{font-size:12px;opacity:.9}
+main{padding:18px 16px 95px}.card{background:#fff;border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 5px 18px #0000000d}.center{text-align:center}.label{font-size:11px;letter-spacing:.12em;color:#778196;font-weight:800}.safe{font-size:48px;font-weight:900;margin:6px 0}.good{color:#13784a;background:#e8f8ef;border-radius:20px;padding:6px 10px;font-size:12px;font-weight:750;display:inline-block}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.muted{color:#778196;font-size:12px}.num{font-size:21px;font-weight:800;margin-top:5px}.title{font-weight:850;font-size:17px;margin:18px 0 10px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid #edf0f5}.row:last-child{border:0}.badge{font-size:10px;font-weight:800;padding:5px 7px;border-radius:8px;background:#eef1f7}
+button{border:0;border-radius:11px;padding:11px 13px;font-weight:800;cursor:pointer}.primary{background:#5b4bdb;color:#fff}.secondary{background:#edf0f7;color:#263247}.danger{background:#fff0ed;color:#a53a2b}.success{background:#e8f8ef;color:#13784a}
+.alert{padding:14px;border-left:4px solid #e0a51c;background:#fff9e7;border-radius:12px;margin-top:10px}.successbox{padding:14px;border-left:4px solid #159b72;background:#eaf9f2;border-radius:12px}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,100%);display:flex;justify-content:space-around;background:#fff;border-top:1px solid #e6eaf0;padding:10px}nav button{background:none;color:#6c7688;font-size:11px}.active{color:#5b4bdb!important}
+.modal{display:none;position:fixed;inset:0;background:#1118;align-items:flex-end;justify-content:center}.modal.show{display:flex}.sheet{background:#fff;width:min(430px,100%);border-radius:24px 24px 0 0;padding:22px}input{width:100%;padding:13px;border:1px solid #d9deea;border-radius:11px;font-size:16px;margin:8px 0 14px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand">Moneviax</div><div class="tag">Your Personal Financial Assistant · SANDBOX</div><br><button class="secondary" onclick="openOnboarding()">Start / Edit Onboarding</button></header>
+<main>
+<section id="dashboard">
+<div class="card center"><div class="label">SAFE TO SPEND</div><div id="safe" class="safe">$442.18</div><span class="good">● On track</span><p class="muted">Updated just now · Test data</p></div>
+
+<div class="card" id="cashFlowStatus">
+  <div class="label">CASH FLOW</div>
+  <div id="cashFlowBadge" style="font-size:22px;font-weight:850;margin:7px 0">🟢 HEALTHY</div>
+  <div id="cashFlowMessage" class="muted">Your projected cash flow looks comfortable.</div>
+</div>
+<div class="grid">
+<div class="card"><div class="muted">Available balance</div><div id="balance" class="num">$1,542.18</div></div>
+<div class="card"><div class="muted">Reserved for bills</div><div id="reserved" class="num">$1,000.00</div></div>
+</div>
+<div class="title">Automatic Bill Pay</div>
+<div class="card successbox"><b>● ON</b><br><span class="muted">Only customer-authorized payments can run.</span></div>
+<div class="title">New obligation</div>
+<div id="subscription" class="card alert"><b>🚨 New subscription detected</b><br><span>Hulu — $17.99/month</span><br><br><button class="primary" onclick="openSetAside()">Set aside payment</button></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="title">🔐 Security & Privacy Center</div>
+<div class="card">
+  <div class="successbox"><b>Your financial data belongs to you.</b><br>
+    <span class="muted">This sandbox contains simulated data only. Production data controls will require formal security and privacy implementation.</span>
+  </div>
+  <div class="row"><span>🔒 Biometric/App Lock</span><span class="badge">ON · Sandbox</span></div>
+  <div class="row"><span>📱 Trusted Devices</span><button class="secondary" onclick="showSecurity('Devices')">Review</button></div>
+  <div class="row"><span>👤 Login Activity</span><button class="secondary" onclick="showSecurity('Login Activity')">Review</button></div>
+  <div class="row"><span>📊 Financial Data Permissions</span><button class="secondary" onclick="showSecurity('Permissions')">Review</button></div>
+  <div class="row"><span>🔔 Notification Permissions</span><button class="secondary" onclick="showSecurity('Notifications')">Review</button></div>
+  <div class="row"><span>📥 Export Data</span><button class="secondary" onclick="showSecurity('Export')">Request</button></div>
+  <div class="row"><span>🗑️ Delete Sandbox Data</span><button class="danger" onclick="deleteSandboxData()">Delete</button></div>
+  <div id="securityResult" style="margin-top:12px"></div>
+</div>
+<div class="title">📱 Notification Preferences</div>
+<div class="card">
+  <p class="muted">Choose how Moneviax should notify you. Sandbox only.</p>
+  <div class="row"><span>📱 Text Alerts</span><input id="prefSms" type="checkbox" checked></div>
+  <div class="row"><span>🔔 Push Notifications</span><input id="prefPush" type="checkbox" checked></div>
+  <div class="row"><span>📧 Email</span><input id="prefEmail" type="checkbox"></div>
+  <div class="row"><span>🚨 Critical alerts</span><input id="prefCritical" type="checkbox" checked></div>
+  <div class="row"><span>⚠️ Cash-flow warnings</span><input id="prefCash" type="checkbox" checked></div>
+  <div class="row"><span>💳 Payment reminders</span><input id="prefPayment" type="checkbox" checked></div>
+  <div class="row"><span>🔄 Subscription changes</span><input id="prefSub" type="checkbox" checked></div>
+  <div class="row"><span>🎯 Goal updates</span><input id="prefGoal" type="checkbox" checked></div>
+  <div class="row"><span>🎉 Milestones</span><input id="prefMilestone" type="checkbox" checked></div>
+  <div class="row"><span>🗓️ Weekly check-ins</span><input id="prefWeekly" type="checkbox" checked></div>
+  <button class="primary" onclick="saveNotificationPrefs()">Save Preferences</button>
+  <div id="prefResult" style="margin-top:10px"></div>
+</div>
+
+<div class="title">🔔 Notification Center</div>
+<div class="card">
+  <div id="notificationCenter"><div class="muted">No sandbox notifications yet.</div></div>
+  <button class="secondary" onclick="sendTestNotification()">Send Test Alert</button>
+</div>
+<div class="title">📈 Recovery Progress</div>
+<div class="card">
+  <p class="muted">Track progress toward rebuilding your simulated safety cushion.</p>
+  <div id="recoveryProgress"></div>
+  <button class="primary" onclick="updateRecoveryProgress()">Update Progress</button>
+</div>
+<div class="title">🚨 Financial Emergency Mode</div>
+<div class="card">
+  <p class="muted">A simplified protection view for periods when projected cash flow becomes seriously constrained.</p>
+  <button class="danger" onclick="activateEmergencyMode()">Check Emergency Mode</button>
+  <div id="emergencyMode" style="margin-top:12px"></div>
+</div>
+<div class="title">🔔 Smart Alert Center</div>
+<div class="card">
+  <p class="muted">Your most important Moneviax notifications, prioritized by urgency.</p>
+  <div id="alertCenter"></div>
+  <button class="primary" onclick="refreshAlerts()">Refresh Alerts</button>
+</div>
+<div class="title">🗓️ Weekly Financial Check-In</div>
+<div class="card">
+  <p class="muted">A quick weekly snapshot of your simulated financial picture.</p>
+  <button class="primary" onclick="generateWeeklyCheckIn()">Generate Check-In</button>
+  <div id="weeklyCheckIn" style="margin-top:12px"></div>
+</div>
+<div class="title">❤️ Moneviax Financial Health</div>
+<div class="card center">
+  <div class="label">FINANCIAL HEALTH SCORE</div>
+  <div id="healthScore" class="safe" style="font-size:44px">—</div>
+  <span id="healthBadge" class="good">Calculating</span>
+  <p id="healthTrend" class="muted"></p>
+</div>
+<div class="card">
+  <div id="healthDetails"></div>
+  <button class="primary" onclick="calculateHealthScore()">Update Health Score</button>
+</div>
+<div class="title">💡 Save Opportunities</div>
+<div class="card">
+  <p class="muted">Moneviax can flag recurring expenses that may be worth reviewing.</p>
+  <div id="saveOpportunities"></div>
+  <button class="primary" onclick="scanSavings()">Scan for Savings</button>
+</div>
+<div class="title">📈 Subscription Price Monitor</div>
+<div class="card">
+  <p class="muted">Compare a recurring charge with its previous amount.</p>
+  <div class="row"><span><b>Netflix</b><br><span class="muted">$19.99 → $26.99</span></span><span><b>+$7.00/mo</b><br><span class="muted">+$84/year</span></span></div>
+  <div class="alert"><b>⚠️ Subscription price increased</b><br>
+    Your simulated Netflix charge increased by $7.00/month. This can reduce your projected Safe to Spend by $84 over a year.
+  </div>
+  <button class="primary" onclick="reviewPriceChange()">Review Price Change</button>
+</div>
+<div class="title">🔄 Subscriptions & Bill Management</div>
+<div class="card">
+  <p class="muted">Review recurring charges and see their monthly and annual impact.</p>
+  <div id="recurringList"></div>
+  <button class="primary" onclick="refreshRecurring()">Refresh Recurring Charges</button>
+</div>
+<div class="title">📅 Financial Calendar</div>
+<div class="card">
+  <p class="muted">A simulated timeline of money coming in, going out, and planned reserves.</p>
+  <div id="calendarEvents"></div>
+  <button class="primary" onclick="buildCalendar()">Refresh Calendar</button>
+</div>
+<div class="title">🎯 Financial Goals</div>
+<div class="card">
+  <p class="muted">Create a goal and let Moneviax estimate a contribution that fits your current financial picture.</p>
+  <label class="muted">Goal</label>
+  <select id="goalType" style="width:100%;padding:13px;border:1px solid #d9deea;border-radius:11px;margin:8px 0 14px;font-size:16px">
+    <option>Pay off credit card</option>
+    <option>Build emergency fund</option>
+    <option>Pay off loan</option>
+    <option>Save for a purchase</option>
+    <option>Reach credit-score goal</option>
+  </select>
+  <label class="muted">Target amount</label>
+  <input id="goalTarget" type="number" step="0.01" value="1700">
+  <label class="muted">Target date (months from now)</label>
+  <input id="goalMonths" type="number" step="1" value="4">
+  <button class="primary" onclick="createGoal()">Create Goal Plan</button>
+  <div id="goalResult" style="margin-top:12px"></div>
+</div>
+<div class="title">🔎 What Changed?</div>
+<div class="card">
+  <div id="changesSummary" class="muted">Moneviax will explain the latest changes affecting your Safe to Spend.</div>
+  <div id="changesList" style="margin-top:10px"></div>
+  <button class="secondary" onclick="refreshChanges()">Refresh Explanation</button>
+</div>
+<div class="title">📊 Cash-Flow Forecast</div>
+<div class="card">
+  <p class="muted">See how your simulated balance could change over time.</p>
+  <div class="grid">
+    <div class="card"><div class="muted">7 days</div><div id="fc7" class="num">—</div></div>
+    <div class="card"><div class="muted">14 days</div><div id="fc14" class="num">—</div></div>
+    <div class="card"><div class="muted">30 days</div><div id="fc30" class="num">—</div></div>
+    <div class="card"><div class="muted">60 days</div><div id="fc60" class="num">—</div></div>
+  </div>
+  <button class="primary" onclick="runForecast()">Run Forecast</button>
+  <div id="forecastResult" style="margin-top:12px"></div>
+</div>
+<div class="title">📅 Paycheck Planner</div>
+<div class="card">
+  <p class="muted">Plan your next paycheck against upcoming obligations before you spend it.</p>
+  <label class="muted">Next paycheck</label>
+  <input id="planPaycheck" type="number" step="0.01" value="1785.77">
+  <label class="muted">Bills due before your next paycheck</label>
+  <input id="planBills" type="number" step="0.01" value="650">
+  <label class="muted">Subscriptions/recurring expenses</label>
+  <input id="planRecurring" type="number" step="0.01" value="75">
+  <label class="muted">Safety cushion</label>
+  <input id="planCushion" type="number" step="0.01" value="100">
+  <button class="primary" onclick="planPaycheck()">Build My Paycheck Plan</button>
+  <div id="planResult" style="margin-top:12px"></div>
+</div>
+<div class="title">💵 Set Aside for Me</div>
+<div class="card">
+  <p class="muted">Moneviax can estimate how much of your next paycheck to reserve for upcoming obligations.</p>
+  <label class="muted">Next paycheck</label>
+  <input id="setAsidePaycheck" type="number" step="0.01" value="1785.77">
+  <label class="muted">Days until paycheck</label>
+  <input id="setAsideDays" type="number" step="1" value="7">
+  <button class="primary" onclick="calculateReserve()">Calculate Reserve</button>
+  <div id="reserveResult" style="margin-top:12px"></div>
+</div>
+<div class="title">🛒 Purchase Check</div>
+<div class="card">
+  <p class="muted">Ask Moneviax before making a purchase.</p>
+  <input id="purchaseAmount" type="number" step="0.01" value="200" placeholder="Purchase amount">
+  <button class="primary" onclick="checkPurchase()">Check Purchase</button>
+  <div id="purchaseResult" style="margin-top:12px"></div>
+</div>
+<div class="title">🤖 Moneviax Financial Assistant</div>
+<div class="card">
+  <div class="successbox" id="assistantInsight">
+    <b>Moneviax says:</b><br>
+    <span class="muted">I can explain your Safe-to-Spend amount, upcoming obligations, and recent changes using your sandbox data.</span>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px">
+    <button class="secondary" onclick="askAssistant('afford')">Can I afford $200?</button>
+    <button class="secondary" onclick="askAssistant('drop')">Why did it drop?</button>
+    <button class="secondary" onclick="askAssistant('bills')">Which bills matter?</button>
+    <button class="secondary" onclick="askAssistant('reserve')">How much to reserve?</button>
+  </div>
+</div>
+<div class="title">Upcoming bills</div>
+<div class="card">
+<div class="row"><span><b>Mortgage</b><br><span class="muted">Sep 1</span></span><b>$1,080</b></div>
+<div class="row"><span><b>Netflix</b><br><span class="muted">Sep 3</span></span><b>$26.99</b></div>
+<div class="row"><span><b>Pathfinder</b><br><span class="muted">Sep 14</span></span><b>$781.58</b></div>
+</div>
+<div class="title">Dynamic Sandbox</div>
+<div class="card">
+  <p class="muted">Test how Moneviax responds to common financial events.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <button class="secondary" onclick="simulatePaycheck()">+ $1,785 paycheck</button>
+    <button class="secondary" onclick="simulateSpend()">− $150 spending</button>
+    <button class="secondary" onclick="simulateSubscription()">New $24.99 subscription</button>
+    <button class="secondary" onclick="simulateBillIncrease()">Bill +$50</button>
+    <button class="secondary" onclick="simulatePayoff()">🎉 Pay off card</button>
+    <button class="danger" onclick="resetSandbox()">Reset sandbox</button>
+  </div>
+</div>
+<div id="event" class="card muted">No sandbox event yet.</div>
+<div class="title">Payment Safety Lock</div>
+<div class="card">
+  <div class="muted">Next authorized payment</div>
+  <div class="num">Mortgage · $1,080</div>
+  <p class="muted">Run a safety check before simulated Auto-Pay.</p>
+  <button class="primary" onclick="runSafetyCheck()">Run Safety Check</button>
+</div>
+<div class="title">Recent Sandbox Activity</div>
+<div id="activity" class="card"><div class="muted">No activity yet.</div></div>
+<div id="paymentStatus" class="card muted">No payment has been processed in this sandbox session.</div>
+
+</section>
+</main>
+<nav>
+<button class="active">🏠<br>Home</button><button onclick="alert('Bills screen: automatic payments and safety checks.')">💳<br>Bills</button><button onclick="alert('Alerts screen: new obligations and spending warnings.')">🔔<br>Alerts</button><button onclick="alert('Credit screen: score, utilization and milestones.')">📈<br>Credit</button>
+</nav>
+</div>
+
+<div id="modal" class="modal"><div class="sheet">
+<h2>New Subscription Detected</h2><p><b>Hulu — $17.99/month</b></p>
+<p>How much would you like Moneviax to set aside?</p>
+<input id="amount" type="number" step="0.01" value="17.99">
+<button class="primary" onclick="setAside()">Set Aside</button>
+<button class="secondary" onclick="closeModal()">Not Now</button>
+</div></div>
+
+<script>
+let safe=442.18,reserved=1000,balance=1542.18;
+const money=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+function render(){document.getElementById('safe').textContent=money(safe);document.getElementById('reserved').textContent=money(reserved);document.getElementById('balance').textContent=money(balance)}
+function openSetAside(){document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function setAside(){let a=parseFloat(document.getElementById('amount').value)||0;reserved+=a;safe-=a;closeModal();document.getElementById('subscription').innerHTML='<b>✅ Hulu payment reserved</b><br><span>$'+a.toFixed(2)+' set aside for the next charge.</span>';document.getElementById('event').innerHTML='<b>Payment reserve created</b><br>Safe to Spend updated to <b>'+money(safe)+'</b>.';render()}
+function simulateSpend(){balance-=150;safe-=150;document.getElementById('event').innerHTML='<b>⚠️ Spending detected</b><br>$150 simulated transaction posted. Safe to Spend is now <b>'+money(safe)+'</b>.';render()}
+function simulatePayoff(){document.getElementById('event').innerHTML='<b>🎉 CONGRATULATIONS!</b><br>Sandbox credit card balance reached $0. Moneviax will monitor for the next reported credit update.'}
+
+function runSafetyCheck(){
+  const payment=1080;
+  const cushion=100;
+  const projected=balance-payment;
+  document.getElementById('riskText').innerHTML =
+    `Available balance: <b>${money(balance)}</b><br>
+     Payment: <b>${money(payment)}</b><br>
+     Projected balance: <b>${money(projected)}</b><br>
+     Safety cushion: <b>${money(cushion)}</b><br><br>` +
+    (projected < cushion
+      ? `⚠️ <b>Payment risk detected.</b> This simulated payment would put the projected balance below your safety cushion.`
+      : `🟢 <b>Payment appears safe.</b> The projected balance remains above your safety cushion.`);
+  document.getElementById('payActions').innerHTML =
+    `<button class="primary" onclick="simulateAutoPay()">Pay Anyway</button>
+     <button class="secondary" onclick="pausePayment()">Pause Payment</button>
+     <button class="secondary" onclick="closePayModal()">Review Later</button>`;
+  document.getElementById('payModal').classList.add('show');
+}
+function closePayModal(){document.getElementById('payModal').classList.remove('show')}
+function pausePayment(){
+  closePayModal();
+  document.getElementById('paymentStatus').innerHTML =
+    '<b>⏸️ Payment Paused</b><br><span class="muted">The mortgage was not simulated as paid. No money was moved.</span>';
+  document.getElementById('event').innerHTML =
+    '<b>🛡️ Payment Safety Lock activated</b><br>The $1,080 payment was paused because the projected balance was below the $100 safety cushion.';
+}
+function simulateAutoPay(){
+  const payment=1080;
+  balance-=payment;
+  safe-=payment;
+  closePayModal();
+  document.getElementById('paymentStatus').innerHTML =
+    '<b>✅ Simulated Auto-Pay Complete</b><br><span class="muted">Mortgage payment of $1,080 was simulated. No real money was moved.</span>';
+  document.getElementById('event').innerHTML =
+    '<b>💳 Payment confirmation</b><br>Simulated mortgage payment processed. Safe to Spend is now <b>'+money(safe)+'</b>.';
+  render();
+}
+
+let startingState = {
+  safe: 442.18, reserved: 1000, balance: 1542.18,
+  activity: []
+};
+let billTotal = 1000;
+let subscriptionTotal = 17.99;
+
+function addActivity(text){
+  startingState.activity.unshift({text, time:new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})});
+  const el=document.getElementById('activity');
+  el.innerHTML=startingState.activity.slice(0,6).map(x=>`<div class="row"><span>${x.text}</span><span class="muted">${x.time}</span></div>`).join('');
+}
+function recalc(){
+  // Safe to Spend is the simulated discretionary amount after reserved obligations.
+  safe = balance - reserved;
+  if(safe < 0) safe = safe;
+  render();
+}
+function simulatePaycheck(){
+  balance += 1785;
+  safe += 1785;
+  addActivity('💵 Paycheck received: <b>$1,785.00</b>');
+  document.getElementById('event').innerHTML='<b>💵 Income detected</b><br>Safe to Spend increased to <b>'+money(safe)+'</b>.';
+  render();
+}
+function simulateSpend(){
+  balance -= 150;
+  safe -= 150;
+  addActivity('💸 Spending detected: <b>$150.00</b>');
+  document.getElementById('event').innerHTML='<b>⚠️ Spending alert</b><br>Safe to Spend is now <b>'+money(safe)+'</b>.';
+  render();
+}
+function simulateSubscription(){
+  subscriptionTotal += 24.99;
+  reserved += 24.99;
+  safe -= 24.99;
+  document.getElementById('subscription').innerHTML='<b>🚨 New subscription detected</b><br><span>New recurring charge — $24.99/month</span><br><br><button class="primary" onclick="openSetAside()">Review set-aside</button>';
+  addActivity('🔄 New recurring subscription: <b>$24.99/month</b>');
+  document.getElementById('event').innerHTML='<b>🚨 New obligation</b><br>Moneviax added $24.99 to reserved planning. Safe to Spend is <b>'+money(safe)+'</b>.';
+  render();
+}
+function simulateBillIncrease(){
+  billTotal += 50;
+  reserved += 50;
+  safe -= 50;
+  addActivity('🧾 Bill increased by <b>$50.00</b>');
+  document.getElementById('event').innerHTML='<b>🧾 Bill change detected</b><br>Reserved funds increased by $50. Safe to Spend is <b>'+money(safe)+'</b>.';
+  render();
+}
+function simulatePayoff(){
+  addActivity('🎉 Credit card paid off: <b>$1,700</b>');
+  document.getElementById('event').innerHTML='<b>🎉 CONGRATULATIONS!</b><br>You paid off your simulated credit card. Moneviax will monitor for the next reported credit update.';
+}
+function resetSandbox(){
+  balance=1542.18; reserved=1000; safe=442.18; billTotal=1000; subscriptionTotal=17.99;
+  startingState.activity=[];
+  document.getElementById('activity').innerHTML='<div class="muted">No activity yet.</div>';
+  document.getElementById('event').innerHTML='Sandbox reset. All financial activity is simulated.';
+  document.getElementById('subscription').innerHTML='<b>🚨 New subscription detected</b><br><span>Hulu — $17.99/month</span><br><br><button class="primary" onclick="openSetAside()">Set aside payment</button>';
+  document.getElementById('paymentStatus').innerHTML='No payment has been processed in this sandbox session.';
+  render();
+}
+
+function openOnboarding(){
+  document.getElementById('onboarding').classList.add('show');
+  for(let i=1;i<=4;i++) document.getElementById('obStep'+i).style.display=i===1?'block':'none';
+  document.getElementById('obTitle').textContent='Welcome to Moneviax';
+}
+function obNext(step){
+  for(let i=1;i<=4;i++) document.getElementById('obStep'+i).style.display=i===step?'block':'none';
+  const titles=['','Your income','Your safety cushion','Your recurring expenses','Your debts'];
+  document.getElementById('obTitle').textContent=titles[step];
+}
+function finishOnboarding(){
+  const income=parseFloat(document.getElementById('obIncome').value)||0;
+  const b=parseFloat(document.getElementById('obBalance').value)||0;
+  const cushion=parseFloat(document.getElementById('obCushion').value)||0;
+  const bills=parseFloat(document.getElementById('obBills').value)||0;
+  const subs=parseFloat(document.getElementById('obSubs').value)||0;
+  const card=parseFloat(document.getElementById('obCard').value)||0;
+  const loan=parseFloat(document.getElementById('obLoan').value)||0;
+  balance=b;
+  reserved=bills+subs;
+  safe=balance-reserved-cushion;
+  if(safe<0) safe=0;
+  closeOnboarding();
+  document.getElementById('event').innerHTML =
+    `<b>✅ Dashboard created</b><br>
+     Income: <b>${money(income)}</b> · ${document.getElementById('obFreq').value}<br>
+     Safety cushion: <b>${money(cushion)}</b><br>
+     Credit-card balance: <b>${money(card)}</b> · Loan balance: <b>${money(loan)}</b><br>
+     <b>Safe to Spend: ${money(safe)}</b>`;
+  addActivity('👤 Onboarding completed: financial profile created');
+  render();
+}
+function closeOnboarding(){document.getElementById('onboarding').classList.remove('show')}
+
+function askAssistant(type){
+  const el=document.getElementById('assistantInsight');
+  if(type==='afford'){
+    const purchase=200;
+    const after=safe-purchase;
+    el.innerHTML=after>=0
+      ? `<b>Moneviax says:</b><br><span class="muted">Yes, based on this sandbox snapshot, a $${purchase.toFixed(2)} purchase would leave about <b>${money(after)}</b> Safe to Spend.</span>`
+      : `<b>⚠️ Moneviax says:</b><br><span class="muted">I would not recommend a $${purchase.toFixed(2)} purchase right now. It would put Safe to Spend below $0 by about <b>${money(Math.abs(after))}</b>.</span>`;
+  } else if(type==='drop'){
+    el.innerHTML=`<b>Moneviax says:</b><br><span class="muted">Your Safe to Spend changes when spending, bills, subscriptions, reserved amounts, or income change. In this sandbox, your current reserved amount is <b>${money(reserved)}</b>.</span>`;
+  } else if(type==='bills'){
+    el.innerHTML=`<b>Moneviax says:</b><br><span class="muted">Prioritize obligations by due date and importance. Before an authorized payment, I'll run the Payment Safety Check against your safety cushion.</span>`;
+  } else if(type==='reserve'){
+    const suggested=Math.max(0,Math.min(17.99,safe));
+    el.innerHTML=`<b>Moneviax says:</b><br><span class="muted">For the simulated Hulu subscription, a reasonable starting reserve is <b>${money(suggested)}</b>, but you remain in control of the amount.</span>`;
+  }
+}
+
+function checkPurchase(){
+  const amount=parseFloat(document.getElementById('purchaseAmount').value)||0;
+  const result=document.getElementById('purchaseResult');
+  if(amount<=0){result.innerHTML='<span class="muted">Enter a purchase amount greater than $0.</span>';return;}
+  const after=safe-amount;
+  let level, msg, cls;
+  if(after >= 100){ level='🟢 SAFE'; cls='successbox'; msg=`This purchase would leave approximately <b>${money(after)}</b> Safe to Spend, above your simulated $100 safety cushion.`; }
+  else if(after >= 0){ level='🟡 CAUTION'; cls='alert'; msg=`This purchase would leave approximately <b>${money(after)}</b> Safe to Spend, below your simulated $100 safety cushion.`; }
+  else { level='🔴 HIGH RISK'; cls='alert'; msg=`This purchase would put Safe to Spend below $0 by approximately <b>${money(Math.abs(after))}</b>.`; }
+  result.innerHTML=`<div class="${cls}"><b>${level}</b><br>${msg}<br><br><b>Confirm Purchase?</b><br><br>
+  <button class="primary" onclick="confirmPurchase(${amount})">Yes, Purchase</button>
+  <button class="secondary" onclick="cancelPurchase()">No, Cancel</button>
+  <button class="secondary" onclick="alert('Review your upcoming bills and reserved amounts in the dashboard.')">Review My Bills</button></div>`;
+}
+function confirmPurchase(amount){
+  balance-=amount;
+  safe-=amount;
+  addActivity(`🛒 Purchase confirmed: <b>${money(amount)}</b>`);
+  document.getElementById('purchaseResult').innerHTML=`<div class="successbox"><b>✅ Purchase recorded</b><br>Safe to Spend is now <b>${money(safe)}</b>.<br><span class="muted">Sandbox only — no real transaction was made.</span></div>`;
+  document.getElementById('event').innerHTML=`<b>🛒 Purchase confirmed</b><br>${money(amount)} simulated spending recorded. Safe to Spend is <b>${money(safe)}</b>.`;
+  render();
+}
+function cancelPurchase(){
+  document.getElementById('purchaseResult').innerHTML='<div class="successbox"><b>Purchase cancelled</b><br><span class="muted">No simulated spending was recorded.</span></div>';
+  addActivity('↩️ Purchase check cancelled');
+}
+
+function calculateReserve(){
+  const paycheck=parseFloat(document.getElementById('setAsidePaycheck').value)||0;
+  const days=parseInt(document.getElementById('setAsideDays').value)||0;
+  const reserve=Math.min(paycheck, Math.max(0, reserved));
+  const availableAfter=paycheck-reserve;
+  document.getElementById('reserveResult').innerHTML =
+    `<div class="successbox">
+      <b>Moneviax recommendation</b><br>
+      Set aside approximately <b>${money(reserve)}</b> from the next paycheck toward your currently reserved obligations.
+      <br><br>
+      Estimated amount left from paycheck: <b>${money(availableAfter)}</b>.
+      <br><span class="muted">Based on ${days} days until the simulated paycheck and current sandbox obligations. This is a planning estimate, not a guarantee.</span>
+      <br><br>
+      <button class="primary" onclick="applyReserve(${reserve})">Set Aside ${money(reserve)}</button>
+      <button class="secondary" onclick="editReserve()">Change Amount</button>
+    </div>`;
+}
+function applyReserve(amount){
+  reserved += amount;
+  safe -= amount;
+  addActivity(`💵 Set aside for bills: <b>${money(amount)}</b>`);
+  document.getElementById('event').innerHTML =
+    `<b>💵 Money reserved</b><br>${money(amount)} added to your simulated bill reserve. Safe to Spend is now <b>${money(safe)}</b>.`;
+  document.getElementById('reserveResult').innerHTML =
+    `<div class="successbox"><b>✅ Set Aside Complete</b><br>${money(amount)} is now reserved in the sandbox for upcoming obligations.</div>`;
+  render();
+}
+function editReserve(){
+  document.getElementById('reserveResult').innerHTML =
+    `<div class="alert"><b>Choose your amount</b><br><span class="muted">Enter a custom amount in the Next paycheck field, then calculate again.</span></div>`;
+}
+
+function planPaycheck(){
+  const paycheck=parseFloat(document.getElementById('planPaycheck').value)||0;
+  const bills=parseFloat(document.getElementById('planBills').value)||0;
+  const recurring=parseFloat(document.getElementById('planRecurring').value)||0;
+  const cushion=parseFloat(document.getElementById('planCushion').value)||0;
+  const reserve=Math.min(paycheck,bills+recurring);
+  const left=Math.max(0,paycheck-reserve-cushion);
+  document.getElementById('planResult').innerHTML =
+    `<div class="successbox">
+      <b>💵 Your paycheck plan</b><br><br>
+      Paycheck: <b>${money(paycheck)}</b><br>
+      Bills to reserve: <b>${money(bills)}</b><br>
+      Recurring expenses: <b>${money(recurring)}</b><br>
+      Safety cushion: <b>${money(cushion)}</b><br>
+      <hr>
+      Recommended reserve: <b>${money(reserve)}</b><br>
+      Estimated Safe to Spend from this paycheck: <b>${money(left)}</b>
+      <br><br>
+      <button class="primary" onclick="applyPaycheckPlan(${reserve},${left})">Apply Plan</button>
+      <button class="secondary" onclick="editPaycheckPlan()">Adjust</button>
+    </div>`;
+}
+function applyPaycheckPlan(reserve,left){
+  reserved += reserve;
+  safe = left;
+  balance += reserve + left;
+  addActivity(`📅 Paycheck plan applied: <b>${money(reserve)}</b> reserved`);
+  document.getElementById('event').innerHTML =
+    `<b>📅 Paycheck plan applied</b><br>${money(reserve)} reserved for obligations. Estimated Safe to Spend from this paycheck: <b>${money(left)}</b>.`;
+  document.getElementById('planResult').innerHTML =
+    `<div class="successbox"><b>✅ Plan applied</b><br>Your simulated paycheck has been allocated and Safe to Spend updated.</div>`;
+  render();
+}
+function editPaycheckPlan(){
+  document.getElementById('planResult').innerHTML =
+    `<div class="alert"><b>Adjust your plan</b><br><span class="muted">Change any amount above and select Build My Paycheck Plan again.</span></div>`;
+}
+
+function runForecast(){
+  // Sandbox forecast: starts from current balance and applies current reserved obligations
+  // plus a simple recurring-spend estimate. This is a planning simulation, not a prediction guarantee.
+  const base=balance-reserved;
+  const weeklySpend=75;
+  const incomeEvery14=1785.77;
+  const billEvents=[1000, 1000, 1250, 1250];
+  function projected(days){
+    let v=base - weeklySpend*(days/7);
+    if(days>=14) v+=incomeEvery14;
+    if(days>=28) v+=incomeEvery14;
+    if(days>=42) v+=incomeEvery14;
+    if(days>=56) v+=incomeEvery14;
+    let billIndex=Math.floor(days/14);
+    for(let i=0;i<billIndex;i++) v-=billEvents[Math.min(i,billEvents.length-1)];
+    return v;
+  }
+  const vals={7:projected(7),14:projected(14),30:projected(30),60:projected(60)};
+  for(const d of [7,14,30,60]) document.getElementById('fc'+d).textContent=money(vals[d]); updateCashFlowStatus();
+  const danger=Object.entries(vals).find(([d,v])=>v<100);
+  let message=danger
+    ? `<div class="alert"><b>⚠️ Potential cash shortage in ${danger[0]} days</b><br><span class="muted">Projected amount: <b>${money(danger[1])}</b>, below the simulated $100 safety cushion. Consider increasing your reserve or reducing discretionary spending.</span><br><br><button class="primary" onclick="scrollToReserve()">Create Reserve Plan</button></div>`
+    : `<div class="successbox"><b>🟢 Forecast looks stable</b><br><span class="muted">No projected period falls below the simulated $100 safety cushion in this sandbox scenario.</span></div>`;
+  document.getElementById('forecastResult').innerHTML=message;
+  addActivity('📊 Cash-flow forecast refreshed');
+}
+function scrollToReserve(){
+  document.getElementById('setAsidePaycheck').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function updateCashFlowStatus(){
+  const cushion=100;
+  const trend=safe;
+  const badge=document.getElementById('cashFlowBadge');
+  const msg=document.getElementById('cashFlowMessage');
+  if(!badge||!msg)return;
+  if(trend < 0){
+    badge.textContent='🚨 CRITICAL';
+    msg.textContent='Projected Safe to Spend is below $0. Review spending and upcoming obligations.';
+    badge.style.color='#a53a2b';
+  }else if(trend < cushion){
+    badge.textContent='⚠️ CAUTION';
+    msg.textContent='Projected Safe to Spend is below your $100 safety cushion. Consider reducing spending or increasing reserves.';
+    badge.style.color='#a36b00';
+  }else if(trend < cushion*1.5){
+    badge.textContent='🟡 WATCH';
+    msg.textContent='Cash flow is getting tighter. You are approaching your preferred safety cushion.';
+    badge.style.color='#a36b00';
+  }else{
+    badge.textContent='🟢 HEALTHY';
+    msg.textContent='Your projected cash flow looks comfortable.';
+    badge.style.color='#13784a';
+  }
+}
+const originalRender = render;
+render=function(){originalRender();updateCashFlowStatus();}
+
+function refreshChanges(){
+  const changes=startingState.activity.slice(0,5);
+  const list=document.getElementById('changesList');
+  const summary=document.getElementById('changesSummary');
+  if(!changes.length){
+    summary.textContent='No recent changes have been recorded in this sandbox session.';
+    list.innerHTML='';
+    return;
+  }
+  summary.innerHTML='<b>Here is what Moneviax has seen recently:</b>';
+  list.innerHTML=changes.map(x=>`<div class="row"><span>${x.text}</span><span class="muted">${x.time}</span></div>`).join('');
+}
+
+let currentGoal=null;
+function createGoal(){
+  const type=document.getElementById('goalType').value;
+  const target=parseFloat(document.getElementById('goalTarget').value)||0;
+  const months=Math.max(1,parseInt(document.getElementById('goalMonths').value)||1);
+  const monthly=target/months;
+  const safeMonthly=Math.max(0,Math.min(monthly,Math.max(0,safe)));
+  const status=safeMonthly>=monthly
+    ? `🟢 This contribution fits the current sandbox Safe-to-Spend picture.`
+    : `🟡 The full contribution may be too aggressive right now. Moneviax suggests starting around <b>${money(safeMonthly)}</b> and reviewing after your next paycheck.`;
+  currentGoal={type,target,months,monthly: safeMonthly,progress:0};
+  document.getElementById('goalResult').innerHTML=
+    `<div class="successbox">
+      <b>🎯 ${type}</b><br>
+      Target: <b>${money(target)}</b><br>
+      Timeline: <b>${months} month${months===1?'':'s'}</b><br>
+      Suggested contribution: <b>${money(safeMonthly)}/month</b><br><br>
+      ${status}<br><br>
+      <button class="primary" onclick="applyGoalContribution()">Set Aside First Contribution</button>
+    </div>`;
+  addActivity(`🎯 Goal created: <b>${type}</b> · ${money(target)}`);
+}
+function applyGoalContribution(){
+  if(!currentGoal)return;
+  const amount=currentGoal.monthly;
+  currentGoal.progress=Math.min(currentGoal.target,currentGoal.progress+amount);
+  reserved+=amount;
+  safe-=amount;
+  const complete=currentGoal.progress>=currentGoal.target;
+  document.getElementById('goalResult').innerHTML=
+    `<div class="${complete?'successbox':'successbox'}">
+      <b>${complete?'🎉 CONGRATULATIONS!':'✅ Contribution set aside'}</b><br>
+      ${complete ? `You reached your <b>${currentGoal.type}</b> goal!` : `${money(amount)} reserved toward your goal.`}
+      <br>Progress: <b>${money(currentGoal.progress)}</b> / ${money(currentGoal.target)}
+      <br><span class="muted">Sandbox only — no real money was moved.</span>
+    </div>`;
+  document.getElementById('event').innerHTML=
+    `<b>🎯 Goal progress updated</b><br>${money(currentGoal.progress)} of ${money(currentGoal.target)} reached.`;
+  addActivity(`🎯 Goal contribution: <b>${money(amount)}</b>`);
+  render();
+}
+
+function buildCalendar(){
+  const events=[
+    {date:'Aug 28',type:'income',icon:'💵',name:'Paycheck',amount:1785.77},
+    {date:'Sep 1',type:'bill',icon:'🏠',name:'Mortgage',amount:-1080},
+    {date:'Sep 3',type:'sub',icon:'🔄',name:'Netflix',amount:-26.99},
+    {date:'Sep 10',type:'debt',icon:'💳',name:'Credit card',amount:-150},
+    {date:'Sep 14',type:'bill',icon:'🚗',name:'Pathfinder',amount:-781.58},
+    {date:'Sep 15',type:'bill',icon:'🚙',name:'Rogue',amount:-946.38},
+    {date:'Sep 22',type:'bill',icon:'🛡️',name:'Car insurance',amount:-415.10},
+    {date:'Sep 26',type:'goal',icon:'🎯',name:'Goal contribution',amount:-100}
+  ];
+  let running=balance;
+  document.getElementById('calendarEvents').innerHTML=events.map(e=>{
+    running+=e.amount;
+    const risk=running<0?'🚨':running<100?'⚠️':running<250?'🟡':'🟢';
+    const amount=(e.amount>=0?'+':'')+money(e.amount);
+    return `<div class="row"><span><b>${e.icon} ${e.date}</b><br><span class="muted">${e.name}</span></span><span style="text-align:right"><b>${amount}</b><br><span class="muted">${risk} projected</span></span></div>`;
+  }).join('');
+}
+
+function refreshRecurring(){
+  const recurring=[
+    {name:'Netflix',amount:26.99,due:'Sep 3',kind:'Subscription',newItem:false},
+    {name:'Hulu',amount:17.99,due:'Sep 7',kind:'Subscription',newItem:true},
+    {name:'Car insurance',amount:415.10,due:'Sep 22',kind:'Bill',newItem:false},
+    {name:'Internet',amount:50,due:'Sep 20',kind:'Bill',newItem:false}
+  ];
+  document.getElementById('recurringList').innerHTML=recurring.map((r,i)=>{
+    const annual=r.amount*12;
+    const badge=r.newItem?'<span class="badge">NEW</span>':'<span class="badge">'+r.kind+'</span>';
+    return `<div class="row">
+      <span><b>${r.name}</b> ${badge}<br><span class="muted">${r.due} · ${money(r.amount)}/month · ${money(annual)}/year</span></span>
+      <button class="secondary" onclick="reviewRecurring('${r.name}',${r.amount})">Review</button>
+    </div>`;
+  }).join('');
+}
+function reviewRecurring(name,amount){
+  document.getElementById('event').innerHTML=
+    `<b>🔄 ${name}</b><br>${money(amount)}/month · ${money(amount*12)}/year.<br><span class="muted">Moneviax can help you review the charge, but it will not cancel or pause a service without your authorization.</span>`;
+  addActivity(`🔎 Reviewed recurring charge: <b>${name}</b>`);
+}
+
+function reviewPriceChange(){
+  const oldAmount=19.99,newAmount=26.99,delta=newAmount-oldAmount;
+  document.getElementById('event').innerHTML=
+    `<b>📈 Subscription price change reviewed</b><br>
+     Netflix increased from ${money(oldAmount)} to ${money(newAmount)} per month.<br>
+     Monthly impact: <b>+${money(delta)}</b> · Annual impact: <b>+${money(delta*12)}</b>.<br>
+     <span class="muted">Moneviax has not changed or canceled the subscription.</span>`;
+  addActivity(`📈 Price increase detected: <b>Netflix +${money(delta)}/month</b>`);
+}
+
+function scanSavings(){
+  const opportunities=[
+    {name:'Internet',current:50,possible:40,reason:'Recurring bill may be worth reviewing.'},
+    {name:'Netflix',current:26.99,possible:19.99,reason:'Subscription price increased from the prior sandbox amount.'},
+    {name:'Hulu',current:17.99,possible:0,reason:'New recurring subscription detected; review if it is still wanted.'}
+  ];
+  document.getElementById('saveOpportunities').innerHTML=opportunities.map((o,i)=>{
+    const monthly=o.current-o.possible;
+    const annual=monthly*12;
+    return `<div class="card" style="margin:10px 0">
+      <b>💡 ${o.name}</b><br>
+      <span class="muted">${o.reason}</span><br>
+      <span>Current: <b>${money(o.current)}/mo</b></span><br>
+      ${o.possible===0
+        ? `<span>Potential action: <b>Review whether to keep it</b></span>`
+        : `<span>Illustrative lower amount: <b>${money(o.possible)}/mo</b><br>
+           Potential difference: <b>${money(monthly)}/mo</b> · <b>${money(annual)}/year</b></span>`}
+      <br><br><button class="secondary" onclick="reviewSavings('${o.name}',${monthly})">Explore</button>
+    </div>`;
+  }).join('');
+}
+function reviewSavings(name,monthly){
+  document.getElementById('event').innerHTML=
+    `<b>💡 Savings opportunity: ${name}</b><br>
+     Potential difference shown in this sandbox: <b>${money(Math.max(0,monthly))}/month</b>.<br>
+     <span class="muted">This is an illustrative planning estimate. Moneviax does not automatically negotiate, cancel, or change services.</span>`;
+  addActivity(`💡 Savings opportunity reviewed: <b>${name}</b>`);
+}
+
+function calculateHealthScore(){
+  const cushion=100;
+  let score=50;
+  const strengths=[],risks=[];
+  if(safe>=cushion*2){score+=15;strengths.push('Strong Safe-to-Spend cushion');}
+  else if(safe>=cushion){score+=8;strengths.push('Safety cushion maintained');}
+  else {score-=12;risks.push('Safe-to-Spend is below the safety cushion');}
+  if(reserved>0){score+=10;strengths.push('Upcoming obligations are being reserved');}
+  if(safe<250){score-=8;risks.push('Cash flow is getting tight');}
+  if(currentGoal){score+=8;strengths.push('Financial goal is active');}
+  score=Math.max(0,Math.min(100,score));
+  let label=score>=80?'🟢 Strong':score>=65?'🟡 Good':score>=50?'⚠️ Watch':'🚨 Needs Attention';
+  const badge=document.getElementById('healthBadge');
+  badge.textContent=label;
+  badge.className=score>=65?'good':'badge';
+  document.getElementById('healthScore').textContent=score+' / 100';
+  document.getElementById('healthTrend').textContent='Moneviax guidance score · Separate from your credit score';
+  document.getElementById('healthDetails').innerHTML=
+    `<b>What's helping</b><br>${strengths.length?strengths.map(x=>'✅ '+x).join('<br>'):'No major strengths detected yet.'}
+     <br><br><b>What needs attention</b><br>${risks.length?risks.map(x=>'⚠️ '+x).join('<br>'):'No major risks detected in this sandbox snapshot.'}
+     <br><br><span class="muted">The score is a planning indicator based on this sandbox snapshot, not a credit score or financial guarantee.</span>`;
+  addActivity(`❤️ Financial Health Score updated: <b>${score}/100</b>`);
+}
+
+function generateWeeklyCheckIn(){
+  const score=parseInt(document.getElementById('healthScore').textContent)||0;
+  const upcoming=1000+26.99+781.58+946.38+415.10;
+  const monthlySubs=26.99+17.99;
+  const status=safe<0?'🚨 Critical':safe<100?'⚠️ Caution':safe<250?'🟡 Watch':'🟢 Healthy';
+  const recommendation=safe<100
+    ? 'Consider reducing discretionary spending and increasing your next paycheck reserve.'
+    : safe<250
+    ? 'Keep discretionary spending controlled until your next paycheck.'
+    : 'You appear to have room for planned spending while maintaining your simulated cushion.';
+  document.getElementById('weeklyCheckIn').innerHTML=
+    `<div class="successbox">
+      <b>💰 Safe to Spend</b><br>${money(safe)}<br><br>
+      <b>🧾 Upcoming obligations</b><br>${money(upcoming)}<br><br>
+      <b>🔄 Known subscriptions</b><br>${money(monthlySubs)}/month · ${money(monthlySubs*12)}/year<br><br>
+      <b>❤️ Financial Health</b><br>${score}/100<br><br>
+      <b>${status}</b><br>${recommendation}<br><br>
+      <b>💡 Moneviax recommendation</b><br>${recommendation}
+    </div>`;
+  addActivity('🗓️ Weekly Financial Check-In generated');
+}
+
+function refreshAlerts(){
+  const alerts=[];
+  if(safe<0) alerts.push({level:'🚨 CRITICAL',cls:'alert',title:'Safe to Spend is negative',body:`Your simulated Safe to Spend is ${money(safe)}. Review spending and upcoming obligations.`});
+  else if(safe<100) alerts.push({level:'⚠️ NEEDS ATTENTION',cls:'alert',title:'Safety cushion at risk',body:`Safe to Spend is ${money(safe)}, below the simulated $100 cushion.`});
+  else if(safe<250) alerts.push({level:'🟡 WATCH',cls:'alert',title:'Cash flow is tightening',body:`Safe to Spend is ${money(safe)}. Consider limiting discretionary spending.`});
+  alerts.push({level:'💡 OPPORTUNITY',cls:'successbox',title:'Review recurring costs',body:'Moneviax found recurring expenses that may be worth reviewing.'});
+  if(currentGoal) alerts.push({level:'🎯 GOAL',cls:'successbox',title:'Goal is active',body:`Keep contributing toward your ${currentGoal.type} goal of ${money(currentGoal.target)}.`});
+  alerts.push({level:'🎉 GOOD NEWS',cls:'successbox',title:'Your financial plan is active',body:'Paycheck planning, reserves, purchase checks, and safety monitoring are enabled in this sandbox.'});
+  document.getElementById('alertCenter').innerHTML=alerts.map(a=>`<div class="${a.cls}" style="margin:8px 0"><b>${a.level} · ${a.title}</b><br><span class="muted">${a.body}</span><br><br><button class="secondary" onclick="alert('Details: ${a.title.replace(/'/g,"")}')">Why am I seeing this?</button></div>`).join('');
+  addActivity('🔔 Smart Alert Center refreshed');
+}
+
+function activateEmergencyMode(){
+  const emergency=safe<0;
+  const caution=safe<100;
+  const el=document.getElementById('emergencyMode');
+  if(emergency){
+    el.innerHTML=`<div class="alert"><b>🚨 FINANCIAL EMERGENCY MODE</b><br>
+      Your simulated Safe to Spend is <b>${money(safe)}</b> and below $0.<br><br>
+      <b>Recovery priorities</b><br>
+      • Protect essential bills<br>
+      • Pause discretionary spending<br>
+      • Review optional recurring expenses<br>
+      • Review your next paycheck<br>
+      • Avoid adding new debt<br><br>
+      <button class="primary" onclick="createRecoveryPlan()">Create Recovery Plan</button>
+    </div>`;
+  }else if(caution){
+    el.innerHTML=`<div class="alert"><b>⚠️ Early Warning</b><br>
+      Your Safe to Spend is ${money(safe)}, below the simulated $100 cushion. You're not in Emergency Mode yet, but a recovery plan may help.<br><br>
+      <button class="secondary" onclick="createRecoveryPlan()">Create Preventive Plan</button>
+    </div>`;
+  }else{
+    el.innerHTML=`<div class="successbox"><b>🟢 Normal Mode</b><br>
+      Your current simulated Safe to Spend is ${money(safe)}. No emergency-mode trigger is active.</div>`;
+  }
+}
+function createRecoveryPlan(){
+  const target=Math.max(0,100-safe);
+  const weekly=Math.max(25,Math.ceil(target/4));
+  document.getElementById('emergencyMode').innerHTML=
+    `<div class="successbox"><b>🛡️ Recovery Plan</b><br>
+      1. Protect essential bills first.<br>
+      2. Review optional recurring charges.<br>
+      3. Keep discretionary purchases below your available Safe to Spend.<br>
+      4. Consider setting aside about <b>${money(weekly)}</b> per week until your cushion is restored.<br><br>
+      <span class="muted">This is a sandbox planning suggestion, not personalized financial advice.</span></div>`;
+  addActivity('🛡️ Recovery Plan created');
+}
+
+function updateRecoveryProgress(){
+  const target=100;
+  const current=Math.max(0,Math.min(target,safe));
+  const pct=Math.round((current/target)*100);
+  let html='';
+  if(current>=target){
+    html=`<div class="successbox"><b>🎉 RECOVERY COMPLETE!</b><br>Your simulated Safe-to-Spend is ${money(current)}, at or above the ${money(target)} safety cushion.<br><br><b>100%</b> of your recovery target reached.</div>`;
+  }else{
+    const remaining=target-current;
+    html=`<div class="${current<25?'alert':'successbox'}">
+      <b>${current<25?'🛡️ Recovery in Progress':'📈 Keep Going!'}</b><br>
+      Safety cushion rebuilt: <b>${money(current)}</b> / ${money(target)}<br>
+      Progress: <b>${pct}%</b><br><br>
+      <div style="height:12px;background:#e9edf4;border-radius:8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:#5b4bdb"></div></div>
+      <br><span class="muted">${money(remaining)} remaining to reach your simulated safety cushion.</span>
+    </div>`;
+  }
+  document.getElementById('recoveryProgress').innerHTML=html;
+  addActivity('📈 Recovery Progress updated');
+}
+
+let notificationPrefs={sms:true,push:true,email:false,critical:true,cash:true,payment:true,sub:true,goal:true,milestone:true,weekly:true};
+let notifications=[];
+function saveNotificationPrefs(){
+  notificationPrefs={
+    sms:document.getElementById('prefSms').checked,push:document.getElementById('prefPush').checked,
+    email:document.getElementById('prefEmail').checked,critical:document.getElementById('prefCritical').checked,
+    cash:document.getElementById('prefCash').checked,payment:document.getElementById('prefPayment').checked,
+    sub:document.getElementById('prefSub').checked,goal:document.getElementById('prefGoal').checked,
+    milestone:document.getElementById('prefMilestone').checked,weekly:document.getElementById('prefWeekly').checked
+  };
+  document.getElementById('prefResult').innerHTML='<div class="successbox">✅ Preferences saved in sandbox.</div>';
+  addActivity('📱 Notification preferences updated');
+}
+function sendTestNotification(){
+  const channels=[];
+  if(notificationPrefs.sms)channels.push('SMS');
+  if(notificationPrefs.push)channels.push('Push');
+  if(notificationPrefs.email)channels.push('Email');
+  notifications.unshift({title:'⚠️ Test Moneviax Alert',body:'Your Safe to Spend is available in the app. Open Moneviax for details.',channels});
+  renderNotifications();
+  addActivity('🔔 Test notification sent');
+}
+function renderNotifications(){
+  const el=document.getElementById('notificationCenter');
+  if(!notifications.length){el.innerHTML='<div class="muted">No sandbox notifications yet.</div>';return;}
+  el.innerHTML=notifications.slice(0,5).map(n=>`<div class="row"><span><b>${n.title}</b><br><span class="muted">${n.body}</span></span><span class="badge">${n.channels.join(' · ')||'OFF'}</span></div>`).join('');
+}
+
+function showSecurity(item){
+  document.getElementById('securityResult').innerHTML=
+    `<div class="successbox"><b>${item}</b><br><span class="muted">This control is available as a sandbox simulation. No real account, device, or financial permission has been changed.</span></div>`;
+  addActivity(`🔐 Security Center reviewed: <b>${item}</b>`);
+}
+function deleteSandboxData(){
+  if(confirm('Delete simulated Moneviax sandbox data?')){
+    resetSandbox();
+    notifications=[];
+    renderNotifications();
+    document.getElementById('securityResult').innerHTML='<div class="successbox"><b>🗑️ Sandbox data deleted</b><br><span class="muted">Only simulated data was affected.</span></div>';
+  }
+}
+</script>
+
+<div id="payModal" class="modal"><div class="sheet">
+<h2>🛡️ Payment Safety Check</h2>
+<p><b>Mortgage — $1,080</b></p>
+<p id="riskText"></p>
+<div id="payActions"></div>
+</div></div>
+
+<div id="onboarding" class="modal"><div class="sheet">
+<h2 id="obTitle">Welcome to Moneviax</h2>
+<p id="obDesc">Let's build your simulated financial picture so Moneviax can calculate your first Safe-to-Spend amount.</p>
+
+<div id="obStep1">
+<label class="muted">Monthly/biweekly income amount</label>
+<input id="obIncome" type="number" step="0.01" value="1785.77">
+<label class="muted">Pay frequency</label>
+<select id="obFreq" style="width:100%;padding:13px;border:1px solid #d9deea;border-radius:11px;margin:8px 0 14px;font-size:16px">
+<option>Biweekly</option><option>Weekly</option><option>Monthly</option>
+</select>
+<button class="primary" onclick="obNext(2)">Next</button>
+</div>
+
+<div id="obStep2" style="display:none">
+<label class="muted">Current checking balance</label>
+<input id="obBalance" type="number" step="0.01" value="1542.18">
+<label class="muted">Safety cushion</label>
+<input id="obCushion" type="number" step="0.01" value="100">
+<button class="secondary" onclick="obNext(1)">Back</button>
+<button class="primary" onclick="obNext(3)">Next</button>
+</div>
+
+<div id="obStep3" style="display:none">
+<label class="muted">Monthly bills total</label>
+<input id="obBills" type="number" step="0.01" value="1000">
+<label class="muted">Monthly subscriptions</label>
+<input id="obSubs" type="number" step="0.01" value="17.99">
+<button class="secondary" onclick="obNext(2)">Back</button>
+<button class="primary" onclick="obNext(4)">Next</button>
+</div>
+
+<div id="obStep4" style="display:none">
+<label class="muted">Credit-card balance</label>
+<input id="obCard" type="number" step="0.01" value="1700">
+<label class="muted">Loan balance</label>
+<input id="obLoan" type="number" step="0.01" value="0">
+<div class="successbox"><b>Privacy note</b><br><span class="muted">This is sandbox data only. No bank or credit account is connected.</span></div>
+<button class="secondary" onclick="obNext(3)">Back</button>
+<button class="primary" onclick="finishOnboarding()">Create My Dashboard</button>
+</div>
+</div></div>
+<script>window.addEventListener("load", buildCalendar);
+function refreshRecurring(){
+  const recurring=[
+    {name:'Netflix',amount:26.99,due:'Sep 3',kind:'Subscription',newItem:false},
+    {name:'Hulu',amount:17.99,due:'Sep 7',kind:'Subscription',newItem:true},
+    {name:'Car insurance',amount:415.10,due:'Sep 22',kind:'Bill',newItem:false},
+    {name:'Internet',amount:50,due:'Sep 20',kind:'Bill',newItem:false}
+  ];
+  document.getElementById('recurringList').innerHTML=recurring.map((r,i)=>{
+    const annual=r.amount*12;
+    const badge=r.newItem?'<span class="badge">NEW</span>':'<span class="badge">'+r.kind+'</span>';
+    return `<div class="row">
+      <span><b>${r.name}</b> ${badge}<br><span class="muted">${r.due} · ${money(r.amount)}/month · ${money(annual)}/year</span></span>
+      <button class="secondary" onclick="reviewRecurring('${r.name}',${r.amount})">Review</button>
+    </div>`;
+  }).join('');
+}
+function reviewRecurring(name,amount){
+  document.getElementById('event').innerHTML=
+    `<b>🔄 ${name}</b><br>${money(amount)}/month · ${money(amount*12)}/year.<br><span class="muted">Moneviax can help you review the charge, but it will not cancel or pause a service without your authorization.</span>`;
+  addActivity(`🔎 Reviewed recurring charge: <b>${name}</b>`);
+}
+
+function reviewPriceChange(){
+  const oldAmount=19.99,newAmount=26.99,delta=newAmount-oldAmount;
+  document.getElementById('event').innerHTML=
+    `<b>📈 Subscription price change reviewed</b><br>
+     Netflix increased from ${money(oldAmount)} to ${money(newAmount)} per month.<br>
+     Monthly impact: <b>+${money(delta)}</b> · Annual impact: <b>+${money(delta*12)}</b>.<br>
+     <span class="muted">Moneviax has not changed or canceled the subscription.</span>`;
+  addActivity(`📈 Price increase detected: <b>Netflix +${money(delta)}/month</b>`);
+}
+
+function scanSavings(){
+  const opportunities=[
+    {name:'Internet',current:50,possible:40,reason:'Recurring bill may be worth reviewing.'},
+    {name:'Netflix',current:26.99,possible:19.99,reason:'Subscription price increased from the prior sandbox amount.'},
+    {name:'Hulu',current:17.99,possible:0,reason:'New recurring subscription detected; review if it is still wanted.'}
+  ];
+  document.getElementById('saveOpportunities').innerHTML=opportunities.map((o,i)=>{
+    const monthly=o.current-o.possible;
+    const annual=monthly*12;
+    return `<div class="card" style="margin:10px 0">
+      <b>💡 ${o.name}</b><br>
+      <span class="muted">${o.reason}</span><br>
+      <span>Current: <b>${money(o.current)}/mo</b></span><br>
+      ${o.possible===0
+        ? `<span>Potential action: <b>Review whether to keep it</b></span>`
+        : `<span>Illustrative lower amount: <b>${money(o.possible)}/mo</b><br>
+           Potential difference: <b>${money(monthly)}/mo</b> · <b>${money(annual)}/year</b></span>`}
+      <br><br><button class="secondary" onclick="reviewSavings('${o.name}',${monthly})">Explore</button>
+    </div>`;
+  }).join('');
+}
+function reviewSavings(name,monthly){
+  document.getElementById('event').innerHTML=
+    `<b>💡 Savings opportunity: ${name}</b><br>
+     Potential difference shown in this sandbox: <b>${money(Math.max(0,monthly))}/month</b>.<br>
+     <span class="muted">This is an illustrative planning estimate. Moneviax does not automatically negotiate, cancel, or change services.</span>`;
+  addActivity(`💡 Savings opportunity reviewed: <b>${name}</b>`);
+}
+
+function calculateHealthScore(){
+  const cushion=100;
+  let score=50;
+  const strengths=[],risks=[];
+  if(safe>=cushion*2){score+=15;strengths.push('Strong Safe-to-Spend cushion');}
+  else if(safe>=cushion){score+=8;strengths.push('Safety cushion maintained');}
+  else {score-=12;risks.push('Safe-to-Spend is below the safety cushion');}
+  if(reserved>0){score+=10;strengths.push('Upcoming obligations are being reserved');}
+  if(safe<250){score-=8;risks.push('Cash flow is getting tight');}
+  if(currentGoal){score+=8;strengths.push('Financial goal is active');}
+  score=Math.max(0,Math.min(100,score));
+  let label=score>=80?'🟢 Strong':score>=65?'🟡 Good':score>=50?'⚠️ Watch':'🚨 Needs Attention';
+  const badge=document.getElementById('healthBadge');
+  badge.textContent=label;
+  badge.className=score>=65?'good':'badge';
+  document.getElementById('healthScore').textContent=score+' / 100';
+  document.getElementById('healthTrend').textContent='Moneviax guidance score · Separate from your credit score';
+  document.getElementById('healthDetails').innerHTML=
+    `<b>What's helping</b><br>${strengths.length?strengths.map(x=>'✅ '+x).join('<br>'):'No major strengths detected yet.'}
+     <br><br><b>What needs attention</b><br>${risks.length?risks.map(x=>'⚠️ '+x).join('<br>'):'No major risks detected in this sandbox snapshot.'}
+     <br><br><span class="muted">The score is a planning indicator based on this sandbox snapshot, not a credit score or financial guarantee.</span>`;
+  addActivity(`❤️ Financial Health Score updated: <b>${score}/100</b>`);
+}
+
+function generateWeeklyCheckIn(){
+  const score=parseInt(document.getElementById('healthScore').textContent)||0;
+  const upcoming=1000+26.99+781.58+946.38+415.10;
+  const monthlySubs=26.99+17.99;
+  const status=safe<0?'🚨 Critical':safe<100?'⚠️ Caution':safe<250?'🟡 Watch':'🟢 Healthy';
+  const recommendation=safe<100
+    ? 'Consider reducing discretionary spending and increasing your next paycheck reserve.'
+    : safe<250
+    ? 'Keep discretionary spending controlled until your next paycheck.'
+    : 'You appear to have room for planned spending while maintaining your simulated cushion.';
+  document.getElementById('weeklyCheckIn').innerHTML=
+    `<div class="successbox">
+      <b>💰 Safe to Spend</b><br>${money(safe)}<br><br>
+      <b>🧾 Upcoming obligations</b><br>${money(upcoming)}<br><br>
+      <b>🔄 Known subscriptions</b><br>${money(monthlySubs)}/month · ${money(monthlySubs*12)}/year<br><br>
+      <b>❤️ Financial Health</b><br>${score}/100<br><br>
+      <b>${status}</b><br>${recommendation}<br><br>
+      <b>💡 Moneviax recommendation</b><br>${recommendation}
+    </div>`;
+  addActivity('🗓️ Weekly Financial Check-In generated');
+}
+
+function refreshAlerts(){
+  const alerts=[];
+  if(safe<0) alerts.push({level:'🚨 CRITICAL',cls:'alert',title:'Safe to Spend is negative',body:`Your simulated Safe to Spend is ${money(safe)}. Review spending and upcoming obligations.`});
+  else if(safe<100) alerts.push({level:'⚠️ NEEDS ATTENTION',cls:'alert',title:'Safety cushion at risk',body:`Safe to Spend is ${money(safe)}, below the simulated $100 cushion.`});
+  else if(safe<250) alerts.push({level:'🟡 WATCH',cls:'alert',title:'Cash flow is tightening',body:`Safe to Spend is ${money(safe)}. Consider limiting discretionary spending.`});
+  alerts.push({level:'💡 OPPORTUNITY',cls:'successbox',title:'Review recurring costs',body:'Moneviax found recurring expenses that may be worth reviewing.'});
+  if(currentGoal) alerts.push({level:'🎯 GOAL',cls:'successbox',title:'Goal is active',body:`Keep contributing toward your ${currentGoal.type} goal of ${money(currentGoal.target)}.`});
+  alerts.push({level:'🎉 GOOD NEWS',cls:'successbox',title:'Your financial plan is active',body:'Paycheck planning, reserves, purchase checks, and safety monitoring are enabled in this sandbox.'});
+  document.getElementById('alertCenter').innerHTML=alerts.map(a=>`<div class="${a.cls}" style="margin:8px 0"><b>${a.level} · ${a.title}</b><br><span class="muted">${a.body}</span><br><br><button class="secondary" onclick="alert('Details: ${a.title.replace(/'/g,"")}')">Why am I seeing this?</button></div>`).join('');
+  addActivity('🔔 Smart Alert Center refreshed');
+}
+
+function activateEmergencyMode(){
+  const emergency=safe<0;
+  const caution=safe<100;
+  const el=document.getElementById('emergencyMode');
+  if(emergency){
+    el.innerHTML=`<div class="alert"><b>🚨 FINANCIAL EMERGENCY MODE</b><br>
+      Your simulated Safe to Spend is <b>${money(safe)}</b> and below $0.<br><br>
+      <b>Recovery priorities</b><br>
+      • Protect essential bills<br>
+      • Pause discretionary spending<br>
+      • Review optional recurring expenses<br>
+      • Review your next paycheck<br>
+      • Avoid adding new debt<br><br>
+      <button class="primary" onclick="createRecoveryPlan()">Create Recovery Plan</button>
+    </div>`;
+  }else if(caution){
+    el.innerHTML=`<div class="alert"><b>⚠️ Early Warning</b><br>
+      Your Safe to Spend is ${money(safe)}, below the simulated $100 cushion. You're not in Emergency Mode yet, but a recovery plan may help.<br><br>
+      <button class="secondary" onclick="createRecoveryPlan()">Create Preventive Plan</button>
+    </div>`;
+  }else{
+    el.innerHTML=`<div class="successbox"><b>🟢 Normal Mode</b><br>
+      Your current simulated Safe to Spend is ${money(safe)}. No emergency-mode trigger is active.</div>`;
+  }
+}
+function createRecoveryPlan(){
+  const target=Math.max(0,100-safe);
+  const weekly=Math.max(25,Math.ceil(target/4));
+  document.getElementById('emergencyMode').innerHTML=
+    `<div class="successbox"><b>🛡️ Recovery Plan</b><br>
+      1. Protect essential bills first.<br>
+      2. Review optional recurring charges.<br>
+      3. Keep discretionary purchases below your available Safe to Spend.<br>
+      4. Consider setting aside about <b>${money(weekly)}</b> per week until your cushion is restored.<br><br>
+      <span class="muted">This is a sandbox planning suggestion, not personalized financial advice.</span></div>`;
+  addActivity('🛡️ Recovery Plan created');
+}
+
+function updateRecoveryProgress(){
+  const target=100;
+  const current=Math.max(0,Math.min(target,safe));
+  const pct=Math.round((current/target)*100);
+  let html='';
+  if(current>=target){
+    html=`<div class="successbox"><b>🎉 RECOVERY COMPLETE!</b><br>Your simulated Safe-to-Spend is ${money(current)}, at or above the ${money(target)} safety cushion.<br><br><b>100%</b> of your recovery target reached.</div>`;
+  }else{
+    const remaining=target-current;
+    html=`<div class="${current<25?'alert':'successbox'}">
+      <b>${current<25?'🛡️ Recovery in Progress':'📈 Keep Going!'}</b><br>
+      Safety cushion rebuilt: <b>${money(current)}</b> / ${money(target)}<br>
+      Progress: <b>${pct}%</b><br><br>
+      <div style="height:12px;background:#e9edf4;border-radius:8px;overflow:hidden"><div style="height:100%;width:${pct}%;background:#5b4bdb"></div></div>
+      <br><span class="muted">${money(remaining)} remaining to reach your simulated safety cushion.</span>
+    </div>`;
+  }
+  document.getElementById('recoveryProgress').innerHTML=html;
+  addActivity('📈 Recovery Progress updated');
+}
+
+let notificationPrefs={sms:true,push:true,email:false,critical:true,cash:true,payment:true,sub:true,goal:true,milestone:true,weekly:true};
+let notifications=[];
+function saveNotificationPrefs(){
+  notificationPrefs={
+    sms:document.getElementById('prefSms').checked,push:document.getElementById('prefPush').checked,
+    email:document.getElementById('prefEmail').checked,critical:document.getElementById('prefCritical').checked,
+    cash:document.getElementById('prefCash').checked,payment:document.getElementById('prefPayment').checked,
+    sub:document.getElementById('prefSub').checked,goal:document.getElementById('prefGoal').checked,
+    milestone:document.getElementById('prefMilestone').checked,weekly:document.getElementById('prefWeekly').checked
+  };
+  document.getElementById('prefResult').innerHTML='<div class="successbox">✅ Preferences saved in sandbox.</div>';
+  addActivity('📱 Notification preferences updated');
+}
+function sendTestNotification(){
+  const channels=[];
+  if(notificationPrefs.sms)channels.push('SMS');
+  if(notificationPrefs.push)channels.push('Push');
+  if(notificationPrefs.email)channels.push('Email');
+  notifications.unshift({title:'⚠️ Test Moneviax Alert',body:'Your Safe to Spend is available in the app. Open Moneviax for details.',channels});
+  renderNotifications();
+  addActivity('🔔 Test notification sent');
+}
+function renderNotifications(){
+  const el=document.getElementById('notificationCenter');
+  if(!notifications.length){el.innerHTML='<div class="muted">No sandbox notifications yet.</div>';return;}
+  el.innerHTML=notifications.slice(0,5).map(n=>`<div class="row"><span><b>${n.title}</b><br><span class="muted">${n.body}</span></span><span class="badge">${n.channels.join(' · ')||'OFF'}</span></div>`).join('');
+}
+
+function showSecurity(item){
+  document.getElementById('securityResult').innerHTML=
+    `<div class="successbox"><b>${item}</b><br><span class="muted">This control is available as a sandbox simulation. No real account, device, or financial permission has been changed.</span></div>`;
+  addActivity(`🔐 Security Center reviewed: <b>${item}</b>`);
+}
+function deleteSandboxData(){
+  if(confirm('Delete simulated Moneviax sandbox data?')){
+    resetSandbox();
+    notifications=[];
+    renderNotifications();
+    document.getElementById('securityResult').innerHTML='<div class="successbox"><b>🗑️ Sandbox data deleted</b><br><span class="muted">Only simulated data was affected.</span></div>';
+  }
+}
+</script><div id="moneviaxRuntimeStatus" style="position:fixed;bottom:10px;right:10px;z-index:99999;background:#13784a;color:#fff;padding:7px 10px;border-radius:8px;font:600 12px system-ui">Moneviax Interactive ✓</div><script>window.__MONEVIAX_INTERACTIVE__=true;</script></body>
+</html>
