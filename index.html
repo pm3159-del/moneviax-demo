@@ -96,25 +96,25 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,
   <p class="muted">Track progress toward rebuilding your simulated safety cushion.</p>
   <div id="recoveryProgress"></div>
 
-<label for="recoveryAmount" class="muted">Amount rebuilt toward your safety cushion</label>
+<label for="recoveryAmount" class="muted">
+  Amount rebuilt toward your safety cushion
+</label>
 
-<div style="display:flex;gap:8px;align-items:center;margin-top:8px">
-  <span>$</span>
-  <input
-    id="recoveryAmount"
-    type="number"
-    min="0"
-    max="100"
-    step="0.01"
-    placeholder="25.00"
-    inputmode="decimal"
-    style="flex:1"
-  >
-</div>
+<input
+  id="recoveryAmount"
+  type="number"
+  min="0"
+  max="100"
+  step="0.01"
+  placeholder="25.00"
+  inputmode="decimal"
+>
 
-<button class="primary" onclick="updateRecoveryProgress()">Update Progress</button>
+<button class="primary" onclick="updateRecoveryProgress()">
+  Update Progress
+</button>
   
-</div>
+</div
 <div class="title">
   🚨 Financial Emergency Mode
   <span class="info-icon"
