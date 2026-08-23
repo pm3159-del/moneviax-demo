@@ -291,9 +291,10 @@ function simulatePayoff(){document.getElementById('event').innerHTML='<b>🎉 CO
 function runSafetyCheck(){
   const payment=1080;
   const cushion=100;
-  const projected=balance-payment;
+  const available=safe;
+  const projected=available-payment;
   document.getElementById('riskText').innerHTML =
-    `Available balance: <b>${money(balance)}</b><br>
+    `Available Safe to Spend: <b>${money(available)}</b>
      Payment: <b>${money(payment)}</b><br>
      Projected balance: <b>${money(projected)}</b><br>
      Safety cushion: <b>${money(cushion)}</b><br><br>` +
