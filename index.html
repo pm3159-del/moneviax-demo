@@ -105,7 +105,19 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,
 </div>
 <div class="title">
   🔔 Smart Alert Center
-  <span class="info-icon" tabindex="0" title="Smart Alerts help you understand important changes in your finances. Critical means immediate attention may be needed. Needs Attention means you should review an issue soon. Watch means something is approaching a warning threshold. Opportunity identifies a potential way to improve your finances. Goal relates to your financial goals. Good News highlights positive financial progress.">ⓘ</span>
+  <span class="info-icon" tabindex="0" role="button"
+onclick="toggleInfo('smartAlertInfo')"
+onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleInfo('smartAlertInfo')}">ⓘ</span>
+
+<div id="smartAlertInfo" class="info-popup" hidden>
+  <strong>Smart Alert Guide</strong>
+
+  <p>🚨 <b>Critical</b> — Immediate attention may be needed.</p>
+  <p>⚠️ <b>Needs Attention</b> — Review this issue soon.</p>
+  <p>🟡 <b>Watch</b> — Something is approaching a warning threshold.</p>
+  <p>💡 <b>Opportunity</b> — A potential way to improve your finances.</p>
+  <p>🎯 <b>Goal</b> — Progress related to a financial goal.</p>
+  <p>🎉 <b>Good News</b> — Positive financial progress or a milestone.</p>
 </div>
 <div class="card">
   <p class="muted">Your most important Moneviax notifications, prioritized by urgency.</p>
@@ -281,7 +293,13 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,
 <button class="secondary" onclick="closeModal()">Not Now</button>
 </div></div>
 
-<script>
+<script> 
+function toggleInfo(id) {
+  const box = document.getElementById(id);
+  if (!box) return;
+
+  box.hidden = !box.hidden;
+}
 let safe=442.18,reserved=1000,balance=1542.18;
 const money=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
 function render(){document.getElementById('safe').textContent=money(safe);document.getElementById('reserved').textContent=money(reserved);document.getElementById('balance').textContent=money(balance)}
