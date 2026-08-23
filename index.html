@@ -72,16 +72,16 @@ nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(430px,
 <div class="title">📱 Notification Preferences</div>
 <div class="card">
   <p class="muted">Choose how Moneviax should notify you. Sandbox only.</p>
-  <div class="row"><span>📱 Text Alerts</span><input id="prefSms" type="checkbox" checked></div>
-  <div class="row"><span>🔔 Push Notifications</span><input id="prefPush" type="checkbox" checked></div>
-  <div class="row"><span>📧 Email</span><input id="prefEmail" type="checkbox"></div>
-  <div class="row"><span>🚨 Critical alerts</span><input id="prefCritical" type="checkbox" checked></div>
-  <div class="row"><span>⚠️ Cash-flow warnings</span><input id="prefCash" type="checkbox" checked></div>
-  <div class="row"><span>💳 Payment reminders</span><input id="prefPayment" type="checkbox" checked></div>
-  <div class="row"><span>🔄 Subscription changes</span><input id="prefSub" type="checkbox" checked></div>
-  <div class="row"><span>🎯 Goal updates</span><input id="prefGoal" type="checkbox" checked></div>
-  <div class="row"><span>🎉 Milestones</span><input id="prefMilestone" type="checkbox" checked></div>
-  <div class="row"><span>🗓️ Weekly check-ins</span><input id="prefWeekly" type="checkbox" checked></div>
+  <div class="row"><span>📱 Text Alerts</span><input id="prefSms" type="checkbox"</div>
+  <div class="row"><span>🔔 Push Notifications</span><input id="prefPush" type="checkbox"</div>
+  <div class="row"><span>📧 Email</span><input id="prefEmail" type="checkbox"</div>
+  <div class="row"><span>🚨 Critical alerts</span><input id="prefCritical" type="checkbox" </div>
+  <div class="row"><span>⚠️ Cash-flow warnings</span><input id="prefCash" type="checkbox" </div>
+  <div class="row"><span>💳 Payment reminders</span><input id="prefPayment" type="checkbox" </div>
+  <div class="row"><span>🔄 Subscription changes</span><input id="prefSub" type="checkbox" </div>
+  <div class="row"><span>🎯 Goal updates</span><input id="prefGoal" type="checkbox" </div>
+  <div class="row"><span>🎉 Milestones</span><input id="prefMilestone" type="checkbox" </div>
+  <div class="row"><span>🗓️ Weekly check-ins</span><input id="prefWeekly" type="checkbox"</div>
   <button class="primary" onclick="saveNotificationPrefs()">Save Preferences</button>
   <div id="prefResult" style="margin-top:10px"></div>
 </div>
@@ -928,14 +928,26 @@ function updateRecoveryProgress(){
 }
 function saveNotificationPrefs(){
   notificationPrefs={
-    sms:document.getElementById('prefSms').checked,push:document.getElementById('prefPush').checked,
-    email:document.getElementById('prefEmail').checked,critical:document.getElementById('prefCritical').checked,
-    cash:document.getElementById('prefCash').checked,payment:document.getElementById('prefPayment').checked,
-    sub:document.getElementById('prefSub').checked,goal:document.getElementById('prefGoal').checked,
-    milestone:document.getElementById('prefMilestone').checked,weekly:document.getElementById('prefWeekly').checked
+    sms:document.getElementById('prefSms').checked,
+    push:document.getElementById('prefPush').checked,
+    email:document.getElementById('prefEmail').checked,
+    critical:document.getElementById('prefCritical').checked,
+    cash:document.getElementById('prefCash').checked,
+    payment:document.getElementById('prefPayment').checked,
+    sub:document.getElementById('prefSub').checked,
+    goal:document.getElementById('prefGoal').checked,
+    milestone:document.getElementById('prefMilestone').checked,
+    weekly:document.getElementById('prefWeekly').checked
   };
+
+  localStorage.setItem(
+    'moneviaxNotificationPrefs',
+    JSON.stringify(notificationPrefs)
+  );
+
   document.getElementById('prefResult').innerHTML='<div class="successbox">✅ Preferences saved in sandbox.</div>';
   addActivity('📱 Notification preferences updated');
+}
 }
 function sendTestNotification(){
   const channels=[];
@@ -1197,6 +1209,16 @@ function updateRecoveryProgress(){
 }
 
 let notificationPrefs={sms:true,push:true,email:false,critical:true,cash:true,payment:true,sub:true,goal:true,milestone:true,weekly:true};
+const savedNotificationPrefs = localStorage.getItem('moneviaxNotificationPrefs');
+
+if(savedNotificationPrefs){
+  try{
+    notificationPrefs = {
+      ...notificationPrefs,
+      ...JSON.parse(savedNotificationPrefs)
+    };
+  }catch(e){}
+}
 let notifications=[];
 function saveNotificationPrefs(){
   notificationPrefs={
@@ -1237,5 +1259,6 @@ function deleteSandboxData(){
     document.getElementById('securityResult').innerHTML='<div class="successbox"><b>🗑️ Sandbox data deleted</b><br><span class="muted">Only simulated data was affected.</span></div>';
   }
 }
+loadNotificationPrefs(); 
 </script><div id="moneviaxRuntimeStatus" style="position:fixed;bottom:10px;right:10px;z-index:99999;background:#13784a;color:#fff;padding:7px 10px;border-radius:8px;font:600 12px system-ui">Moneviax Interactive ✓</div><script>window.__MONEVIAX_INTERACTIVE__=true;</script></body>
 </html>
