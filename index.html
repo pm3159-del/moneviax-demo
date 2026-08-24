@@ -1219,6 +1219,27 @@ if(savedNotificationPrefs){
     };
   }catch(e){}
 }
+function loadNotificationPrefs(){
+  const map={
+    sms:'prefSms',
+    push:'prefPush',
+    email:'prefEmail',
+    critical:'prefCritical',
+    cash:'prefCash',
+    payment:'prefPayment',
+    sub:'prefSub',
+    goal:'prefGoal',
+    milestone:'prefMilestone',
+    weekly:'prefWeekly'
+  };
+
+  Object.keys(map).forEach(key=>{
+    const checkbox=document.getElementById(map[key]);
+    if(checkbox){
+      checkbox.checked=!!notificationPrefs[key];
+    }
+  });
+}  
 let notifications=[];
 function saveNotificationPrefs(){
   notificationPrefs={
